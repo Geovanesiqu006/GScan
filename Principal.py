@@ -33,14 +33,12 @@ else:
         print(codigo)
         print("Iniciando análise...")
 
-        if "senha" in codigo:
-            print (" Risco Encontrado!!")
-
-
-        
-
+        if "senha" in codigo or "password" in codigo or "api_key" in codigo or "token" in codigo or "secret" in codigo:
+            print("Risco encontrado!")
+    
     else:
-        print("Endereço de repositório inválido")
+        print("Nenhuma palavra-chave encontrada.")
+        
         
         
 
