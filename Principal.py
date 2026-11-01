@@ -35,10 +35,12 @@ else:
 
         if "senha" in codigo or "password" in codigo or "api_key" in codigo or "token" in codigo or "secret" in codigo:
             print("Risco encontrado!")
-    
-    else:
-        print("Nenhuma palavra-chave encontrada.")
-        
+            print("Risco: Alto")
+            print("Descrição: Possível informação sensível encontrada no código.")
+            print("Recomendação: Evite armazenar senhas e tokens diretamente nos arquivos.")
+
+        else:
+            print("Nenhum risco encontrado!")
         
         
 
