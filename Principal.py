@@ -32,10 +32,18 @@ else:
 
         print(codigo)
         print("Iniciando análise...")
-
+        
+         
+        # Busca pelas vunerabilidades
+    
+    linhas = codigo.splitlines()
+    for numero, linha in enumerate(linhas ,start=1):
+      
         if "senha" in codigo or "password" in codigo or "api_key" in codigo or "token" in codigo or "secret" in codigo:
             print("Risco encontrado!")
-            print("Risco: Alto")
+            print(f"Linha: {numero}")
+            print(f"Detecção: {linha}")
+            
             print("Descrição: Possível informação sensível encontrada no código.")
             print("Recomendação: Evite armazenar senhas e tokens diretamente nos arquivos.")
 
