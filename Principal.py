@@ -1,70 +1,68 @@
 
 print("Bem Vindo ao GScan")
 
+import urllib.request
+import json
+
 repositorio = input("Digite o endereço do seu Repositório: ")
 
 if repositorio == "":
     print("Nenhum repositório foi informado")
 
 else:
-    # Verifica se o endereço informado começa com o GitHub
     if repositorio.startswith("https://github.com/"):
+
         print("Repositório válido")
 
-        # Divide o endereço do repositório em partes
         partes = repositorio.rstrip("/").split("/")
 
         if len(partes) >= 5:
+
             usuario = partes[3]
-            repositorio_nome = partes[4]
+            repositorio_nome = partes[4].replace(".git", "")
 
             print(f"Usuario: {usuario}")
             print(f"Repositório: {repositorio_nome}")
 
-            # Abre o arquivo para leitura
+            url_api = f"https://api.github.com/repos/{usuario}/{repositorio_nome}/contents/"
+
+            requisicao = urllib.request.Request(
+                url_api,
+                headers={"User-Agent": "GScan"}
+            )
+
             try:
-                with open("teste1.py", "r", encoding="utf-8") as arquivo:
+                resposta = urllib.request.urlopen(requisicao)
 
-                    # Lê o conteúdo do arquivo
-                    codigo = arquivo.read()
+                dados = json.loads(resposta.read())
 
-                print("Iniciando análise...")
+                print("\nArquivos encontrados no repositório:")
 
-                # Divide o código em linhas
-                linhas = codigo.splitlines()
+                # Extensões de arquivos suportadas
+                extensoes = (
+                    ".py", ".js", ".jsx",  
+                    ".java", ".php", ".c", ".html",
+                    ".css", ".json", ".env", 
+                )
 
-                risco_encontrado = False
+                # Percorre os arquivos encontrados
+                for arquivo in dados:
 
-                # Busca por possíveis informações sensíveis
-                for numero, linha in enumerate(linhas, start=1):
+                    nome_arquivo = arquivo["name"]
 
-                    if ("senha" in linha.lower() or
-                        "password" in linha.lower() or
-                        "api_key" in linha.lower() or
-                        "token" in linha.lower() or
-                        "secret" in linha.lower()):
+                    # Verifica se o arquivo possui extensão suportada
+                    if arquivo["type"] == "file" and nome_arquivo.lower().endswith(extensoes):
 
-                        risco_encontrado = True
+                        print(f"\nAnalisando: {nome_arquivo}")
 
-                        print("\nRisco encontrado!")
-                        print(f"Linha: {numero}")
-                        print(f"Detecção: {linha}")
+            except urllib.error.HTTPError as erro:
+                print(f"Erro HTTP ao acessar o GitHub: {erro.code}")
 
-                        print("Descrição: Possível informação sensível encontrada no código.")
-                       
-                if risco_encontrado == False:
-                    print("Nenhum risco encontrado!")
-
-                print("\nAnálise finalizada!")
-            # tratamento de erro, caso não aquivo não for encontrado.
-            except FileNotFoundError:
-                print("Arquivo teste1.py não encontrado.")
+            except urllib.error.URLError:
+                print("Não foi possível conectar ao GitHub.")
 
         else:
             print("Endereço de repositório incompleto.")
 
     else:
         print("Endereço inválido. Informe um link do GitHub.")
-
-
-        
