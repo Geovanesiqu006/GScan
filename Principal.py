@@ -1,55 +1,70 @@
+
 print("Bem Vindo ao GScan")
 
 repositorio = input("Digite o endereço do seu Repositório: ")
 
-print(repositorio)
-print(repositorio.startswith("https://github.com/"))
-
 if repositorio == "":
     print("Nenhum repositório foi informado")
+
 else:
-# Verifica se o endereço informado começa com o GitHub
+    # Verifica se o endereço informado começa com o GitHub
     if repositorio.startswith("https://github.com/"):
         print("Repositório válido")
 
-# Divide o endereço do repositório em partes
-        partes = repositorio.split("/")
+        # Divide o endereço do repositório em partes
+        partes = repositorio.rstrip("/").split("/")
 
-        usuario = partes [3]
-        repositorio_nome = partes[4]
+        if len(partes) >= 5:
+            usuario = partes[3]
+            repositorio_nome = partes[4]
 
-        print(f"Usuario: {usuario}")
-        print(f"Repositório: {repositorio_nome}")
+            print(f"Usuario: {usuario}")
+            print(f"Repositório: {repositorio_nome}")
 
-         # Abre o arquivo para leitura
-        arquivo = open ("teste1.py", "r" )
+            # Abre o arquivo para leitura
+            try:
+                with open("teste1.py", "r", encoding="utf-8") as arquivo:
 
-        # Lê o conteúdo do arquivo
-        codigo = arquivo.read()
+                    # Lê o conteúdo do arquivo
+                    codigo = arquivo.read()
 
-        # Fecha comando         
-        arquivo.close()
+                print("Iniciando análise...")
 
-        print(codigo)
-        print("Iniciando análise...")
-        
-         
-        # Busca pelas vunerabilidades
-    
-    linhas = codigo.splitlines()
-    for numero, linha in enumerate(linhas ,start=1):
-      
-        if "senha" in codigo or "password" in codigo or "api_key" in codigo or "token" in codigo or "secret" in codigo:
-            print("Risco encontrado!")
-            print(f"Linha: {numero}")
-            print(f"Detecção: {linha}")
-            
-            print("Descrição: Possível informação sensível encontrada no código.")
-            print("Recomendação: Evite armazenar senhas e tokens diretamente nos arquivos.")
+                # Divide o código em linhas
+                linhas = codigo.splitlines()
+
+                risco_encontrado = False
+
+                # Busca por possíveis informações sensíveis
+                for numero, linha in enumerate(linhas, start=1):
+
+                    if ("senha" in linha.lower() or
+                        "password" in linha.lower() or
+                        "api_key" in linha.lower() or
+                        "token" in linha.lower() or
+                        "secret" in linha.lower()):
+
+                        risco_encontrado = True
+
+                        print("\nRisco encontrado!")
+                        print(f"Linha: {numero}")
+                        print(f"Detecção: {linha}")
+
+                        print("Descrição: Possível informação sensível encontrada no código.")
+                       
+                if risco_encontrado == False:
+                    print("Nenhum risco encontrado!")
+
+                print("\nAnálise finalizada!")
+            # tratamento de erro, caso não aquivo não for encontrado.
+            except FileNotFoundError:
+                print("Arquivo teste1.py não encontrado.")
 
         else:
-            print("Nenhum risco encontrado!")
-        
-        
+            print("Endereço de repositório incompleto.")
+
+    else:
+        print("Endereço inválido. Informe um link do GitHub.")
+
 
         
